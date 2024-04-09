@@ -1,4 +1,5 @@
 Chat de Sistemas Distribuídos
+
 Este repositório contém o código-fonte de um chat desenvolvido como parte de uma atividade da disciplina de Sistemas Distribuídos, ministrada na Universidade do Planalto Catarinense, no curso de Sistemas de Informação.
 
 Descrição
@@ -27,4 +28,4 @@ Contribuição
 Contribuições são bem-vindas! Se você tiver sugestões de melhorias, correções de bugs ou novas funcionalidades, sinta-se à vontade para abrir uma issue ou enviar um pull request.
 
 Autor
-Este projeto foi desenvolvido como parte de uma atividade acadêmica por [Seu Nome].
+Este projeto foi desenvolvido como parte de uma atividade acadêmica por Régis Camargo.
