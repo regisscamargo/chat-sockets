@@ -45,3 +45,13 @@ class Client():
             self.clientOnline = False 
             self.server.unsubscribe()  
 
+    def broadcast_message(self, message, client_socket, username):
+        '''Envia mensagens para todos os clientes conectados, exceto para o cliente que enviou a mensagem'''
+        timestamp = self.get_timestamp()
+        formatted_message = f"{username} ({timestamp}): {message}"
+        print(formatted_message)
+        encoded_message = self.encode_message(formatted_message)
+        for client in self.connected_clients:
+            if client != client_socket:
+                client.send(encoded_message[1])
+                client.send(encoded_message[0])

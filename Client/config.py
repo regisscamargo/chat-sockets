@@ -14,3 +14,6 @@ NAME_LIST = '1'
 CLEAR_LIST = '2'
 DISCONNECT_MESSAGE = '3'
 CHANGE_NAME = '4'
+
+HEADER_LENGTH = 64 # tamanho da mensagem padrão (bytes)
+MESSAGE_FORMAT = "utf-8" # formato para codificação

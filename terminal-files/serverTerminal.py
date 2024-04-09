@@ -49,7 +49,7 @@ class Server:
         username_length = int(client_socket.recv(HEADER_LENGTH).decode(MESSAGE_FORMAT))
         username = client_socket.recv(username_length).decode(MESSAGE_FORMAT)
         return username
-
+    
     def add_client(self, client_socket, username):
         '''Adiciona o cliente conectado à lista de clientes ativos'''
         self.client_usernames.append(username)

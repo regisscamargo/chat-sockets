@@ -2,7 +2,10 @@ import sys
 from config import *
 from windowClient import Client
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMainWindow, QApplication
+from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
+import os
+import datetime
+
 
 class MySignal(QtCore.QObject):
     listUser = QtCore.pyqtSignal(str)
@@ -150,7 +153,7 @@ class MainWindow(QMainWindow):
         self.actionEncerrarConn.setText(_translate("MainWindow", "Encerrar Conexão"))
         self.actionLimpar.setText(_translate("MainWindow", "Limpar Chat"))
         self.actionQuit.setText(_translate("MainWindow", "Quit"))
-        self.menuSobre.setText(_translate("MainWindow", "Sobre"))
+        self.menuSobre.setText(_translate("MainWindow", "Enviar arquivo"))
         self.label.setText(_translate("MainWindow", "Usuários Conectados"))
         self.sendBtn.setText(_translate("MainWindow", "Enviar"))
         self.actionChangeName.setShortcut(_translate("MainWindow", "Ctrl+N"))
@@ -214,23 +217,24 @@ class MainWindow(QMainWindow):
             self.nameWin.close()
 
     def sobreWin(self):
-        '''Abre uma janela com informações sobre o projeto'''
-        self.sobreWin = QMainWindow()
-        self.sobreWin.setWindowTitle("Sobre")
-        self.sobreWin.setWindowIcon(QtGui.QIcon(u"img\\miniLogo.png"))
-        self.sobreWin.setStyleSheet("background-color: rgb(192, 192, 192);")
-        self.sobreWin.setMinimumSize(QtCore.QSize(240, 300))
-        self.sobreWin.setMaximumSize(QtCore.QSize(240, 300))
-        self.label = QtWidgets.QLabel(self.sobreWin)
-        self.label.setGeometry(QtCore.QRect(0, 0, 240, 300))
-        font = QtGui.QFont()
-        font.setFamily("Calibri")
-        font.setPointSize(12)
-        self.label.setFont(font)
-        self.label.setStyleSheet("background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 rgba(255, 255, 255, 0));\n"
-        "color: rgb(255, 255, 255);")
-        self.label.setText(u"<html><head/><body><p align=\"center\">Projeto desenvolvido por:</p><p align=\"center\"><br/></p><p align=\"center\">Gurizes da uniplac</p><p align=\"center\"><br/><br/></p><p align=\"center\">2023+1 lá ele</p><p align=\"center\">Se leu, mamou</p></body></html>")
-        self.sobreWin.show()
+        '''Abre uma janela para selecionar e enviar arquivos'''
+        file_path, _ = QFileDialog.getOpenFileName(self, "Enviar Arquivo", "", "Todos os arquivos (*.*);;Imagens (*.png *.jpg *.jpeg);;Documentos (*.pdf *.doc *.docx)")
+        if file_path:
+            self.send_file(file_path)
+
+    def send_file(self, file_path):
+        '''Envia um arquivo para o servidor'''
+        with open(file_path, "rb") as file:
+            file_data = file.read()
+
+        file_name = os.path.basename(file_path)
+        message = (f"<p><i>***{self.client} enviou um arquivo com nome {file_name}***</i></p>")
+        self.client.sendMsg(message, NEW_MESSAGE)
+    def get_timestamp(self):
+        '''Retorna a data e hora atuais no formato dd/mm/aaaa - hh:mm:ss'''
+        now = datetime.datetime.now()
+        return now.strftime("%d/%m/%Y - %H:%M:%S")
+
 
     def chatUpdate(self, str):
         '''Atualiza o chat com a mensagem recebida do servidor'''

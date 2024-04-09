@@ -1,5 +1,6 @@
 import socket
 import threading
+import datetime
 from config import *
 
 class Client():
@@ -27,7 +28,36 @@ class Client():
                     self.handleMsg(msg)
             except:
                 self.online = False
+    
+    def send_message(self, message):
+        encoded_message = message.encode(FORMAT)
+        message_length = len(encoded_message)
+        send_length = str(message_length).encode(FORMAT)
+        send_length += b' ' * (HEADER - len(send_length))
+        self.client.send(send_length)
+        self.client.send(encoded_message)
 
+    def send_data(self, data):
+        self.client.send(data)
+
+    def broadcast_message(self, message, client_socket):
+        '''Envia mensagens para todos os clientes conectados, exceto para o cliente que enviou a mensagem'''
+        timestamp = self.get_timestamp()
+        formatted_message = f"({timestamp}): Enviou um arquivo com nome: {message}"
+    
+    def get_timestamp(self):
+        '''Retorna a data e hora atuais no formato dd/mm/aaaa - hh:mm:ss'''
+        now = datetime.datetime.now()
+        return now.strftime("%d/%m/%Y - %H:%M:%S")
+
+    def encode_message(self, message):
+        '''Codifica a mensagem para envio ao cliente conectado'''
+        encoded_message = message.encode(MESSAGE_FORMAT)
+        message_length = len(encoded_message)
+        send_length = str(message_length).encode(MESSAGE_FORMAT)
+        send_length += b' ' * (HEADER_LENGTH - len(send_length))
+        return encoded_message, send_length
+    
     def handleMsg(self, msg):
         '''Trata as mensagens recebidas do servidor e as envia para a interface gráfica'''
         op = msg[0]
