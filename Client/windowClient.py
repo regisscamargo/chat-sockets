@@ -17,6 +17,7 @@ class Client():
         self.thread_recv.start()
 
     def recvMsg(self):
+        '''Recebe mensagens do servidor e as envia para o método handleMsg'''
         while self.online:
             try:
                 msg_lenght = self.client.recv(HEADER).decode(FORMAT)
@@ -28,6 +29,7 @@ class Client():
                 self.online = False
 
     def handleMsg(self, msg):
+        '''Trata as mensagens recebidas do servidor e as envia para a interface gráfica'''
         op = msg[0]
         msg_list = list(msg)
         msg_list.pop(0)
@@ -40,6 +42,7 @@ class Client():
             self.win.signal.listUser.emit(msg)
 
     def sendMsg(self, msg, op):
+        '''Envia mensagens para o servidor'''
         if self.online:
             try:
                 msg = op + msg
@@ -50,6 +53,7 @@ class Client():
                 self.disconnect()
 
     def disconnect(self):
+        '''Desconecta o cliente do servidor'''
         if self.online:
             self.win.signal.chatLabel.emit("<p><i>Você está se desconectando...</i><p>")
             message, send_length = encodeMsg(DISCONNECT_MESSAGE)
@@ -60,6 +64,7 @@ class Client():
             self.win.signal.chatLabel.emit("<p><i><b>[CONEXÃO ENCERRADA]</i></p>")
 
 def encodeMsg(msg):
+    '''Codifica a mensagem para envio ao servidor'''
     message = str(msg).encode(FORMAT)
     msg_length = len(message)
     send_length = str(msg_length).encode(FORMAT)

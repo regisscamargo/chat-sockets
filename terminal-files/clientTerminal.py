@@ -20,7 +20,7 @@ class Client:
 
 
     def main_loop(self):
-
+        '''Loop principal do cliente, aguarda o usuário digitar uma mensagem e envia para o servidor'''
         while self.online:
             try:
                 msg = str(input())
@@ -35,21 +35,22 @@ class Client:
 
 
     def send_message(self, msg):
-            try:
-                message, send_length = encode_message(msg)
-                self.client.send(send_length)
-                self.client.send(message)
+        '''Envia mensagens para o servidor'''
+        try:
+            message, send_length = encode_message(msg)
+            self.client.send(send_length)
+            self.client.send(message)
 
-                if msg == DISCONNECT_MESSAGE:
-                    self.disconnect()
+            if msg == DISCONNECT_MESSAGE:
+                self.disconnect()
 
-            except:
-                print("Falha na conexão")
-                self.online = False
+        except:
+            print("Falha na conexão")
+            self.online = False
 
 
     def receive_message(self):
-
+        '''Recebe mensagens do servidor e as imprime no terminal'''
         while self.online:
             try:
                 msg_length = self.client.recv(HEADER).decode(FORMAT)
@@ -62,7 +63,7 @@ class Client:
 
 
     def disconnect(self):
-
+        '''Desconecta o cliente do servidor'''
         # Encerrando conexão socket
         print("Você está se desconectando...")
         self.client.close()
@@ -72,6 +73,7 @@ class Client:
 
 
 def encode_message(msg):
+    '''Codifica a mensagem para envio ao servidor'''
     message = str(msg).encode(FORMAT)
     msg_length = len(message)
     send_length = str(msg_length).encode(FORMAT)

@@ -18,6 +18,7 @@ class MainWindow(QMainWindow):
         self.setupUi()
 
     def setupUi(self):
+        '''Configura a interface gráfica'''
         self.setWindowIcon(QtGui.QIcon(u"img\\miniLogo.png"))
         self.setObjectName("MainWindow")
         self.resize(850, 600)
@@ -139,6 +140,7 @@ class MainWindow(QMainWindow):
         QtCore.QMetaObject.connectSlotsByName(self)
 
     def translateUi(self):
+        '''Traduz os textos da interface gráfica'''
         _translate = QtCore.QCoreApplication.translate
         self.msg.setPlaceholderText(_translate("self", u"Escreva uma mensagem", None))
         self.setWindowTitle(_translate("MainWindow", "Chat dos Gurizes"))
@@ -162,12 +164,14 @@ class MainWindow(QMainWindow):
         self.menuSobre.triggered.connect(self.sobreWin)
 
     def newMsg(self):
+        '''Envia uma nova mensagem para o servidor'''
         msg = self.msg.text()
         if msg:
             self.client.sendMsg(msg, NEW_MESSAGE)
             self.msg.setText('')
 
     def changeNameWin(self):
+        '''Abre uma janela para alterar o nome do usuário'''
         self.nameWin = QMainWindow()
         self.nameWin.setWindowIcon(QtGui.QIcon(u"img\\miniLogo.png"))
         self.nameWin.setWindowTitle("Novo nome")
@@ -203,12 +207,14 @@ class MainWindow(QMainWindow):
         self.nameWin.show()
 
     def changeName(self):
+        '''Envia o novo nome para o servidor'''
         name = self.newName.text()
         if name:
             self.client.sendMsg(name, CHANGE_NAME)
             self.nameWin.close()
 
     def sobreWin(self):
+        '''Abre uma janela com informações sobre o projeto'''
         self.sobreWin = QMainWindow()
         self.sobreWin.setWindowTitle("Sobre")
         self.sobreWin.setWindowIcon(QtGui.QIcon(u"img\\miniLogo.png"))
@@ -227,20 +233,24 @@ class MainWindow(QMainWindow):
         self.sobreWin.show()
 
     def chatUpdate(self, str):
+        '''Atualiza o chat com a mensagem recebida do servidor'''
         self.chat.append(str)
 
     def listUpdate(self, str):
+        '''Atualiza a lista de usuários conectados'''
         if str == '':
             self.userList.clear()
         else:
             self.userList.append(str)
 
     def keyPressEvent(self, event):
+        '''Envia a mensagem ao pressionar a tecla Enter'''
         key = event.key()
         if key == QtCore.Qt.Key_Return:
             self.sendBtn.click()
 
     def closeEvent(self, event):
+        '''Encerra a conexão com o servidor ao fechar a janela'''
         if self.client.online:
             self.client.disconnect()
         self.close()

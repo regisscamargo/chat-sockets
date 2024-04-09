@@ -180,7 +180,7 @@ class LogWindow(QMainWindow):
         self.addr = str(self.adress.text())
         self.prt = self.port.text()
         if len(self.name) == 0:
-            self.name = 'User'
+            self.name = 'Luciano dos Codigo Perigoso'
         if len(self.addr) == 0:
             self.addr = SERVER
         if len(self.prt) == 0:

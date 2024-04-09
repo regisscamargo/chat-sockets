@@ -26,7 +26,7 @@ class Server():
         self.subscribe()
 
     def subscribe(self):
-       
+        '''Aceita conexões de clientes e cria uma nova thread para cada cliente conectado'''
         while self.online:
             try:
                 conn, addr = self.serverSocket.accept()
@@ -50,7 +50,7 @@ class Server():
                 return
 
     def unsubscribe(self, client):
-        
+        '''Remove um cliente da lista de clientes ativos'''
         self.clients.remove(client)
         client.conn.close()
  
@@ -61,7 +61,7 @@ class Server():
         self.userListUpdate()
 
     def serverMsg(self, msg):
-
+        '''Envia mensagens do servidor para todos os clientes conectados'''
         message, sendLength = encodeMsg(msg)
 
         for client in self.clients:       
@@ -69,7 +69,7 @@ class Server():
             client.conn.send(message)
 
     def globalMsg(self, msg, client):
-
+        '''Envia mensagens de um cliente para todos os outros clientes conectados'''
         currentDate = getCurrentDate()
 
         msgAll = (f"<p><u>{client.username}</u> ({currentDate}):<br>{msg}</p>")
@@ -90,7 +90,7 @@ class Server():
                 c.conn.send(messageSelf)
 
     def userListUpdate(self):
-
+        '''Atualiza a lista de usuários conectados para todos os clientes conectados'''
         for c in self.clients:
             message, sendLength = encodeMsg(f"{CLEAR_LIST}")            
             c.conn.send(sendLength)
@@ -105,19 +105,21 @@ class Server():
                 c.conn.send(message)
 
     def closeServer(self):
-        
+        '''Encerra o servidor e fecha a conexão socket'''
         input("Pressione [ENTER] para encerrar o servidor\n")
 
         self.online = False
         self.serverSocket.close()
 
 
-def getCurrentDate():
+def getCurrentDate():  
+    '''Retorna a data e hora atual no formato dia/mês/ano - hora:minuto:segundo'''
     now = datetime.now()
     currentTime = now.strftime("%H:%M:%S")
     return(f"{now.day}/{now.month}/{now.year} - {currentTime}")
 
 def encodeMsg(msg):
+    '''Codifica a mensagem para envio via socket'''
     message = str(msg).encode(FORMAT)
     msgLength = len(message)
     sendLength = str(msgLength).encode(FORMAT)
