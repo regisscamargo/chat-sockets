@@ -1,5 +1,6 @@
 import threading
 import socket
+import logging
 from datetime import datetime
 
 from serverClient import Client
@@ -27,6 +28,7 @@ class Server():
 
     def subscribe(self):
         '''Aceita conexões de clientes e cria uma nova thread para cada cliente conectado'''
+        logging.info('[SUBSCRIBE] Server is accepting new connections')
         while self.online:
             try:
                 conn, addr = self.serverSocket.accept()
@@ -36,6 +38,7 @@ class Server():
 
                 client = Client(self, username, conn)
                 self.clients.append(client)
+                logging.info(f"[NEW CONNECTION] {username} connected from {addr}")
 
                 self.userListUpdate()
 
@@ -51,6 +54,7 @@ class Server():
 
     def unsubscribe(self, client):
         '''Remove um cliente da lista de clientes ativos'''
+        logging.info(f"[DISCONNECT] {client.username} disconnected")
         self.clients.remove(client)
         client.conn.close()
  
@@ -62,6 +66,7 @@ class Server():
 
     def serverMsg(self, msg):
         '''Envia mensagens do servidor para todos os clientes conectados'''
+        logging.info('[SERVER MESSAGE] Sending message to all clients')
         message, sendLength = encodeMsg(msg)
 
         for client in self.clients:       
@@ -70,6 +75,7 @@ class Server():
 
     def globalMsg(self, msg, client):
         '''Envia mensagens de um cliente para todos os outros clientes conectados'''
+        logging.info(f'[GLOBAL MESSAGE] {client.username} sent a message to all clients')
         currentDate = getCurrentDate()
 
         msgAll = (f"<p><u>{client.username}</u> ({currentDate}):<br>{msg}</p>")
@@ -81,6 +87,8 @@ class Server():
         message, sendLength = encodeMsg(msgAll)
         messageSelf, sendLengthSelf = encodeMsg(msgSelf)
 
+        logging.info(f'[GLOBAL MESSAGE] Sending message to all clients')
+
         for c in self.clients:
             if(c.conn != client.conn):
                 c.conn.send(sendLength)
@@ -91,6 +99,7 @@ class Server():
 
     def userListUpdate(self):
         '''Atualiza a lista de usuários conectados para todos os clientes conectados'''
+        logging.info('[USER LIST UPDATE] Sending updated user list to all clients')
         for c in self.clients:
             message, sendLength = encodeMsg(f"{CLEAR_LIST}")            
             c.conn.send(sendLength)
@@ -106,6 +115,7 @@ class Server():
 
     def closeServer(self):
         '''Encerra o servidor e fecha a conexão socket'''
+        logging.info('[CLOSING] Closing server')
         input("Pressione [ENTER] para encerrar o servidor\n")
 
         self.online = False
@@ -114,12 +124,14 @@ class Server():
 
 def getCurrentDate():  
     '''Retorna a data e hora atual no formato dia/mês/ano - hora:minuto:segundo'''
+    logging.info('[GET CURRENT DATE] Getting current date')
     now = datetime.now()
     currentTime = now.strftime("%H:%M:%S")
     return(f"{now.day}/{now.month}/{now.year} - {currentTime}")
 
 def encodeMsg(msg):
     '''Codifica a mensagem para envio via socket'''
+    logging.info('[ENCODE MESSAGE] Encoding message')
     message = str(msg).encode(FORMAT)
     msgLength = len(message)
     sendLength = str(msgLength).encode(FORMAT)

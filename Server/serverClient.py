@@ -1,5 +1,6 @@
 from config import *
 import threading
+import logging
 class Client():
 
     def __init__(self, server, username, conn):
@@ -14,6 +15,7 @@ class Client():
 
     def startListening(self):
         '''Função que inicia a escuta do servidor.'''
+        logging.info('[LISTENING] Server is listening for messages')
         while self.clientOnline and self.server.online:
             try:
                 msgLength = self.conn.recv(HEADER).decode(FORMAT) 
@@ -29,6 +31,7 @@ class Client():
     
     def handleMessage(self, msg):
         '''Função que trata as mensagens recebidas pelo servidor.'''
+        logging.info('[MESSAGE] Server received a message')
         op = msg[0]
         msgContent = msg[1:]
 
@@ -46,6 +49,7 @@ class Client():
             self.server.unsubscribe()  
 
     def broadcast_message(self, message, client_socket, username):
+        logging.info('[BROADCAST] Server is broadcasting message')
         '''Envia mensagens para todos os clientes conectados, exceto para o cliente que enviou a mensagem'''
         timestamp = self.get_timestamp()
         formatted_message = f"{username} ({timestamp}): {message}"

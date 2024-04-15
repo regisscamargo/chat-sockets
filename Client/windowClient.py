@@ -1,6 +1,7 @@
 import socket
 import threading
 import datetime
+import logging
 from config import *
 
 class Client():
@@ -19,6 +20,7 @@ class Client():
 
     def recvMsg(self):
         '''Recebe mensagens do servidor e as envia para o método handleMsg'''
+        logging.info('[LISTENING] Server is listening for messages')
         while self.online:
             try:
                 msg_lenght = self.client.recv(HEADER).decode(FORMAT)
@@ -30,28 +32,25 @@ class Client():
                 self.online = False
 
     def send_data(self, data):
+        '''Envia dados para o servidor'''
+        logging.info('[SENDING] Client is sending data')
         self.client.send(data)
 
     def broadcast_message(self, message, client_socket):
         '''Envia mensagens para todos os clientes conectados, exceto para o cliente que enviou a mensagem'''
+        logging.info('[BROADCAST] Server is broadcasting message')
         timestamp = self.get_timestamp()
         formatted_message = f"({timestamp}): Enviou um arquivo com nome: {message}"
     
     def get_timestamp(self):
         '''Retorna a data e hora atuais no formato dd/mm/aaaa - hh:mm:ss'''
+        logging.info('[TIMESTAMP] Getting timestamp')
         now = datetime.datetime.now()
         return now.strftime("%d/%m/%Y - %H:%M:%S")
-
-    def encode_message(self, message):
-        '''Codifica a mensagem para envio ao cliente conectado'''
-        encoded_message = message.encode(MESSAGE_FORMAT)
-        message_length = len(encoded_message)
-        send_length = str(message_length).encode(MESSAGE_FORMAT)
-        send_length += b' ' * (HEADER_LENGTH - len(send_length))
-        return encoded_message, send_length
     
     def handleMsg(self, msg):
         '''Trata as mensagens recebidas do servidor e as envia para a interface gráfica'''
+        logging.info('[MESSAGE] Server received a message')
         op = msg[0]
         msg_list = list(msg)
         msg_list.pop(0)
@@ -65,6 +64,7 @@ class Client():
 
     def sendMsg(self, msg, op):
         '''Envia mensagens para o servidor'''
+        logging.info('[SENDING] Client is sending message')
         if self.online:
             try:
                 msg = op + msg
@@ -76,6 +76,7 @@ class Client():
 
     def disconnect(self):
         '''Desconecta o cliente do servidor'''
+        logging.info('[DISCONNECT] Client is disconnecting')
         if self.online:
             self.win.signal.chatLabel.emit("<p><i>Você está se desconectando...</i><p>")
             message, send_length = encodeMsg(DISCONNECT_MESSAGE)
@@ -87,6 +88,7 @@ class Client():
 
 def encodeMsg(msg):
     '''Codifica a mensagem para envio ao servidor'''
+    logging.info('[ENCODE MESSAGE] Encoding message')
     message = str(msg).encode(FORMAT)
     msg_length = len(message)
     send_length = str(msg_length).encode(FORMAT)
