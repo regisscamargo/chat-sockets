@@ -28,14 +28,6 @@ class Client():
                     self.handleMsg(msg)
             except:
                 self.online = False
-    
-    def send_message(self, message):
-        encoded_message = message.encode(FORMAT)
-        message_length = len(encoded_message)
-        send_length = str(message_length).encode(FORMAT)
-        send_length += b' ' * (HEADER - len(send_length))
-        self.client.send(send_length)
-        self.client.send(encoded_message)
 
     def send_data(self, data):
         self.client.send(data)
